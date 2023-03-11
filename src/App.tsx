@@ -13,16 +13,32 @@ function App() {
     }
     const [items, setItems] = useState([
         {
-            title: 'title',
+            text: 'title',
             completed: false
         },
         {
-            title: 'hello',
+            text: 'hello',
             completed: false
         },
     ]);
 
-    function setCompleted(index:number) {
+    function addTodo(text: string) {
+        const currentItem = [...items]; // get the specified item
+        currentItem.push({text: text, completed: false})
+        setItems(currentItem); // update the state with the new array
+    }
+    function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === "Enter") {
+            const inputElement = event.target as HTMLInputElement;
+            const text = inputElement.value.trim();
+            if (text) {
+                addTodo(text);
+                inputElement.value = "";
+            }
+        }
+    }
+
+    function toggleCompleted(index:number) {
         const updatedItems = [...items]; // make a copy of the items array
         const currentItem = updatedItems[index]; // get the specified item
         currentItem.completed = !currentItem.completed; // toggle the completed property of the item
@@ -44,17 +60,17 @@ function App() {
                         <div className="flex justify-center ml-6 bg-DarkMyDarkGrayishBlue rounded-full w-6 h-6 absolute">
                             <div className="bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute"/>
                         </div>
-                        <input type="text" className="bg-transparent w-full outline-0 text-xl ml-20" placeholder="Create a new todo..."/>
+                        <input type="text" className="bg-transparent w-full outline-0 text-xl ml-20" placeholder="Create a new todo..." onKeyDown={handleKeyPress}/>
                     </div>
 
                     <div className="flex flex-col bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md">
                         {items.map((item, index) =>(
                             <div key={index} className={`py-4 border-b-[1px] border-DarkMyVeryDarkGrayishBlue flex flex-row ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''}` }>
-                                <div className={`flex justify-center ml-6  rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-DarkMyDarkGrayishBlue bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}\`` } onClick={() => setCompleted(index)}>
+                                <div className={`flex justify-center ml-6  rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-DarkMyDarkGrayishBlue bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}\`` } onClick={() => toggleCompleted(index)}>
                                     <div className={`bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
                                     <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` }/>
                                 </div>
-                                <span className="text-xl ml-20">{item.title}</span>
+                                <span className="text-xl ml-20">{item.text}</span>
                             </div>
                         ))}
                     </div>
