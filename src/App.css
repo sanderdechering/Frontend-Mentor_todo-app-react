@@ -1,0 +1,8 @@
+.gradient-border{
+    width: 200px; /* Set the width and height of the element */
+    height: 200px;
+    border-radius: 50%; /* Make the element circular */
+    border: 10px solid transparent; /* Set a transparent solid border */
+    border-image: conic-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%)); /* Set a conic gradient as the border image */
+    padding: 20px;
+}
