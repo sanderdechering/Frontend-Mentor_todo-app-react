@@ -3,6 +3,7 @@ import iconMoon from './assets/icon-moon.svg'
 import iconSun from './assets/icon-sun.svg'
 import iconChecked from './assets/icon-check.svg'
 import backgroundImage_desktop_dark from './assets/bg-desktop-dark.jpg'
+import backgroundImage_desktop_light from './assets/bg-desktop-light.jpg'
 import React, {useState} from "react";
 
 function App() {
@@ -21,8 +22,8 @@ function App() {
         }
     ]);
 
-    let [displayItems, setDisplayItems] = useState(items)
-
+    const [displayItems, setDisplayItems] = useState(items) // this state is used to display items on screen. We use a display state, so the user can filter trough displayItems and add or remove certain items, without losing the real items.
+    const [darkMode, setDarkMode] = useState(true)
     const [filterButtons, setFilterButtons] = useState({
         all: true,
         active: false,
@@ -36,17 +37,16 @@ function App() {
         setDisplayItems(currentItem)
     }
 
-    function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
-        if (event.key === "Enter") {
-            const inputElement = event.target as HTMLInputElement;
-            const text = inputElement.value.trim();
-            if (text) {
-                addTodo(text);
-                inputElement.value = "";
+    function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) { // function definition that takes in a keyboard event as argument
+        if (event.key === "Enter") { // check if the key pressed was the Enter key
+            const inputElement = event.target as HTMLInputElement; // get the input element that triggered the event and cast it as an HTMLInputElement
+            const text = inputElement.value.trim(); // get the value of the input element and remove any whitespace from the beginning or end
+            if (text) { // check if the input value is not an empty string
+                addTodo(text); // call the addTodo function with the input value as argument
+                inputElement.value = ""; // clear the input element's value
             }
         }
     }
-
 
     function displayActiveItems(){
         const currentItem = items.filter(item => !item.completed);
@@ -57,6 +57,7 @@ function App() {
             completed: false
         });
     }
+
     function displayCompletedItems(){
         const currentItem = items.filter(item => item.completed);
         setDisplayItems(currentItem); // update the state with the new array
@@ -66,6 +67,7 @@ function App() {
             completed: true
         });
     }
+
     function displayAllItems(){
         setDisplayItems(items) // update state with items array, so all items are displayed
         setFilterButtons({
@@ -76,10 +78,15 @@ function App() {
     }
 
     function clearCompleted() {
-        const filteredItems = items.filter(item => !item.completed);
-        setItems(filteredItems);
-        setDisplayItems(filteredItems)
-        if (filterButtons.completed) {
+        if (!items.some(item => item.completed)){ // check if there are any items set to completed
+            alert('Nothing to clear')
+            return
+        }
+
+        const filteredItems = items.filter(item => !item.completed); // get all non completed items
+        setItems(filteredItems); // update the state with only non completed items
+        setDisplayItems(filteredItems) // update the items that are being displayed
+        if (filterButtons.completed) { // if completed button is true and now that the display items contain no completed items, set the filterbutton 'all' to true
             setFilterButtons({
                 all: true,
                 active: false,
@@ -93,36 +100,41 @@ function App() {
         const currentItem = updatedItems[index]; // get the specified item
         currentItem.completed = !currentItem.completed; // toggle the completed property of the item
         setItems(updatedItems); // update the state with the new array
+    }
 
+    function toggleDarkMode() {
+        setDarkMode(!darkMode)
     }
 
     return (
-    <div className="App">
-        <div className="min-h-screen bg-DarkMyVeryDarkBlue text-DarkMyLightGrayishBlue">
-            <img className="w-full absolute " src={backgroundImage_desktop_dark} alt="background image for desktop dark mode" />
+    <div className={`App ${darkMode ? 'dark' : ''}`} >
+        <div className="min-h-screen bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkBlue text-LightMyVeryDarkGrayishBlue dark:text-DarkMyLightGrayishBlue">
+            <img className="w-full absolute dark:block hidden " src={backgroundImage_desktop_dark} alt="background image for desktop dark mode" />
+            <img className="w-full absolute block dark:hidden" src={backgroundImage_desktop_light} alt="background image for desktop light mode" />
             <div className="w-full min-h-screen absolute flex justify-center">
                 <div className="md:w-2/3 lg:w-2/5 mt-20 flex flex-col">
                     <div className="flex justify-between">
                         <span className="text-4xl font-bold text-white">T O D O</span>
-                        <img className="w-7 h-7 cursor-pointer" src={iconSun} alt="sun icon for light mode" />
+                        <img className="w-7 h-7 cursor-pointer hidden dark:block" src={iconSun} alt="sun icon for light mode" onClick={toggleDarkMode}/>
+                        <img className="w-7 h-7 cursor-pointer block dark:hidden" src={iconMoon} alt="moon icon for dark mode" onClick={toggleDarkMode}/>
                     </div>
 
-                    <div className="flex bg-DarkMyVeryDarkDesaturatedBlue mt-8 py-5 rounded-md">
-                        <div className="flex justify-center ml-6 bg-DarkMyDarkGrayishBlue rounded-full w-6 h-6 absolute">
-                            <div className="bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute"/>
+                    <div className="flex bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue mt-8 py-5 rounded-md shadow-lg">
+                        <div className="flex justify-center ml-6 bg-LightMyLightGrayishBlue dark:bg-DarkMyDarkGrayishBlue rounded-full w-6 h-6 absolute">
+                            <div className="bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute"/>
                         </div>
                         <input type="text" className="bg-transparent w-full outline-0 text-xl ml-20" placeholder="Create a new todo..." onKeyDown={handleKeyPress}/>
                     </div>
 
                     { displayItems.length !== 0 ? (
-                    <div className="flex flex-col bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md">
+                    <div className="flex flex-col bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md shadow-lg">
                         {displayItems.map((item, index) =>(
-                            <div key={index} className={`py-4 border-b-[1px] border-DarkMyVeryDarkGrayishBlue flex flex-row ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''}` }>
-                                <div className={`flex justify-center ml-6  rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-DarkMyDarkGrayishBlue bg-gradient-to-r ' +
-                                    'from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}` } onClick={() => toggleCompleted(index)}>
-                                    <div className={`bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
+                            <div key={index} className={`py-4 border-b-[1px] border-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue flex flex-row ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''}` }>
+                                <div className={`flex justify-center ml-6 rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-LightMyLightGrayishBlue dark:bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}` } onClick={() => toggleCompleted(index)}>
+                                    <div className={`bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
                                     <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` } alt="icon of a checkmark"/>
                                 </div>
+
                                 <span className="text-xl ml-20">{item.text}</span>
                             </div>
                         ))}
@@ -134,14 +146,14 @@ function App() {
                         </div>
                     )}
 
-                    <div className="flex flex-row bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
-                        <span>{items.length} items left</span>
+                    <div className="flex flex-row text-LightMyDarkGrayishBlue bg-LightMyVeryLightGray shadow-lg text-sm dark:bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
+                        <span className="ml-5">{items.length} items left</span>
                         <div className="mx-20">
                             <span className={`cursor-pointer ${filterButtons['all'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayAllItems}>All</span>
                             <span className={`cursor-pointer mx-5 ${filterButtons['active'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayActiveItems}>Active</span>
                             <span className={`cursor-pointer ${filterButtons['completed'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayCompletedItems}>Completed</span>
                         </div>
-                        <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer" onClick={clearCompleted}>Clear Completed</span>
+                        <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer mr-5" onClick={clearCompleted}>Clear Completed</span>
                     </div>
                 </div>
             </div>
