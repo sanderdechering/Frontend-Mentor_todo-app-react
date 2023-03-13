@@ -5,28 +5,22 @@ import iconChecked from './assets/icon-check.svg'
 import backgroundImage_desktop_dark from './assets/bg-desktop-dark.jpg'
 import {useState} from "react";
 function App() {
-    const numbers = [1, 2, 3, 4, 5];
-    interface item {
-        id: number,
-        title: string,
-        completed: boolean,
-    }
     const [items, setItems] = useState([
         {
-            text: 'title',
-            completed: false
-        },
-        {
-            text: 'hello',
-            completed: false
-        },
+            text: 'test item',
+            completed: false,
+        }
     ]);
+
+    let [displayItems, setDisplayItems] = useState(items)
 
     function addTodo(text: string) {
         const currentItem = [...items]; // get the specified item
         currentItem.push({text: text, completed: false})
         setItems(currentItem); // update the state with the new array
+        setDisplayItems(currentItem)
     }
+
     function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Enter") {
             const inputElement = event.target as HTMLInputElement;
@@ -36,6 +30,25 @@ function App() {
                 inputElement.value = "";
             }
         }
+    }
+
+    function displayActiveItems(){
+        const currentItem = items.filter(item => !item.completed);
+        setDisplayItems(currentItem); // update the state with the new array
+    }
+    function displayCompletedItems(){
+        const currentItem = items.filter(item => item.completed);
+        setDisplayItems(currentItem); // update the state with the new array
+    }
+    function displayAllItems(){
+        setDisplayItems(items) // update state with items array, so all items are displayed
+    }
+
+    function clearCompleted() {
+        const filteredItems = items.filter(item => !item.completed);
+        setItems(filteredItems);
+        setDisplayItems(filteredItems)
+        console.log('hello')
     }
 
     function toggleCompleted(index:number) {
@@ -63,25 +76,35 @@ function App() {
                         <input type="text" className="bg-transparent w-full outline-0 text-xl ml-20" placeholder="Create a new todo..." onKeyDown={handleKeyPress}/>
                     </div>
 
+                    { displayItems.length !== 0 ? (
                     <div className="flex flex-col bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md">
-                        {items.map((item, index) =>(
+                        {displayItems.map((item, index) =>(
                             <div key={index} className={`py-4 border-b-[1px] border-DarkMyVeryDarkGrayishBlue flex flex-row ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''}` }>
                                 <div className={`flex justify-center ml-6  rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-DarkMyDarkGrayishBlue bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}\`` } onClick={() => toggleCompleted(index)}>
                                     <div className={`bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
-                                    <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` }/>
+                                    <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` } alt="icon of a checkmark"/>
                                 </div>
                                 <span className="text-xl ml-20">{item.text}</span>
                             </div>
                         ))}
                     </div>
-                    <div className="flex flex-row bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
-                        <span>X items left</span>
-                        <div className="mx-20">
-                            <span className="text-MyBrightBlue cursor-pointer">All</span>
-                            <span className="mx-5 hover:text-DarkMyLightGrayishBlue cursor-pointer">Active</span>
-                            <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer">Completed</span>
+
+                    ): (
+                        <div className="flex flex-col bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md">
+                             <p className="p-10">Empty list</p>
                         </div>
-                        <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer">Clear Completed</span>
+                    )}
+
+
+
+                    <div className="flex flex-row bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
+                        <span>x items left</span>
+                        <div className="mx-20">
+                            <span className="text-MyBrightBlue cursor-pointer" onClick={displayAllItems}>All</span>
+                            <span className="mx-5 hover:text-DarkMyLightGrayishBlue cursor-pointer" onClick={displayActiveItems}>Active</span>
+                            <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer" onClick={displayCompletedItems}>Completed</span>
+                        </div>
+                        <span className="hover:text-DarkMyLightGrayishBlue cursor-pointer" onClick={clearCompleted}>Clear Completed</span>
                     </div>
                 </div>
             </div>
