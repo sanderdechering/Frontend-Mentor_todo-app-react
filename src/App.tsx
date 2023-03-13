@@ -4,6 +4,7 @@ import iconSun from './assets/icon-sun.svg'
 import iconChecked from './assets/icon-check.svg'
 import backgroundImage_desktop_dark from './assets/bg-desktop-dark.jpg'
 import backgroundImage_desktop_light from './assets/bg-desktop-light.jpg'
+
 import React, {useState} from "react";
 
 function App() {
@@ -29,6 +30,32 @@ function App() {
         active: false,
         completed: false,
     });
+
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
+    const [dropIndex, setDropIndex] = useState<number | null>(null);
+
+    const handleDragStart = (index: number) => { // function that saves the index of the element its dragged from
+        setDragIndex(index);
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>, index: number) => { // function that saves the index of the element its dragged to
+        event.preventDefault();
+        setDropIndex(index);
+    };
+
+    const handleDrop = () => { // function that handles the drop
+        if (dragIndex !== null && dropIndex !== null && dragIndex !== dropIndex) { // validation. Checking if indexes are values that are not null or the same value
+            const newItems = [...items]; // getting al the items
+
+            // changing the indexes of the reordered item list
+            const [removedItem] = newItems.splice(dragIndex, 1);
+            newItems.splice(dropIndex, 0, removedItem);
+            setItems(newItems);
+            setDisplayItems(newItems)
+        }
+        setDragIndex(null);
+        setDropIndex(null);
+    };
 
     function addTodo(text: string) {
         const currentItem = [...items]; // get the specified item
@@ -127,9 +154,19 @@ function App() {
                     </div>
 
                     { displayItems.length !== 0 ? (
-                    <div className="flex flex-col bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md shadow-lg">
+                    <div className="flex flex-col bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md shadow-lg" id="todo-list">
                         {displayItems.map((item, index) =>(
-                            <div key={index} className={`py-4 border-b-[1px] border-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue flex flex-row ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''}` }>
+                            <div key={index}
+                                 draggable={true}
+                                 className={`py-4 border-b-[1px] border-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue flex flex-row 
+                                 ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''} 
+                                 ${dropIndex === index ? 'dark:bg-DarkMyDarkGrayishBlue/50 bg-LightMyDarkGrayishBlue/50': ''}` }
+                                 onDragStart={() => handleDragStart(index)}
+                                 onDragOver={(event) => handleDragOver(event, index)}
+                                 onDrop={handleDrop}
+                                 style={{
+                                     backgroundColor: dropIndex === index ? 'dark:bg-' : '',
+                                 }}>
                                 <div className={`flex justify-center ml-6 rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-LightMyLightGrayishBlue dark:bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}` } onClick={() => toggleCompleted(index)}>
                                     <div className={`bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
                                     <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` } alt="icon of a checkmark"/>
@@ -141,12 +178,11 @@ function App() {
                     </div>
 
                     ): (
-                        <div className="flex flex-col bg-DarkMyVeryDarkDesaturatedBlue mt-8 rounded-t-md">
+                        <div className="flex flex-col bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue shadow-lg border-b-[1px] border-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue  mt-8 rounded-t-md">
                              <p className="p-10 text-xl">No items here...</p>
                         </div>
                     )}
-
-                    <div className="flex flex-row text-LightMyDarkGrayishBlue bg-LightMyVeryLightGray shadow-lg text-sm dark:bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
+                    <div className="flex flex-row text-LightMyDarkGrayishBlue shadow-lg text-sm bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
                         <span className="ml-5">{items.length} items left</span>
                         <div className="mx-20">
                             <span className={`cursor-pointer ${filterButtons['all'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayAllItems}>All</span>
@@ -159,6 +195,8 @@ function App() {
             </div>
         </div>
     </div>
+
+
     )
 }
 export default App
