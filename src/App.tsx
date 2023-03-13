@@ -158,15 +158,16 @@ function App() {
                         {displayItems.map((item, index) =>(
                             <div key={index}
                                  draggable={true}
-                                 className={`py-4 border-b-[1px] border-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue flex flex-row 
+                                 className={`py-4 border-b-[1px] cursor-move border-LightMyLightGrayishBlue hover:bg-LightMyLightGrayishBlue dark:border-DarkMyVeryDarkGrayishBlue dark:hover:bg-DarkMyVeryDarkGrayishBlue2 first:hover:rounded-t-md flex flex-row 
                                  ${item.completed ? 'line-through text-DarkMyVeryDarkGrayishBlue2' : ''} 
-                                 ${dropIndex === index ? 'dark:bg-DarkMyDarkGrayishBlue/50 bg-LightMyDarkGrayishBlue/50': ''}` }
+                                 ${dropIndex === index ? 'dark:bg-DarkMyVeryDarkGrayishBlue2 bg-LightMyDarkGrayishBlue/50': ''}` }
                                  onDragStart={() => handleDragStart(index)}
                                  onDragOver={(event) => handleDragOver(event, index)}
                                  onDrop={handleDrop}
                                  style={{
                                      backgroundColor: dropIndex === index ? 'dark:bg-' : '',
                                  }}>
+
                                 <div className={`flex justify-center ml-6 rounded-full w-6 h-6 absolute ${item.completed ? 'cursor-pointer bg-gradient-to-r from-GradientBlue to-GradientPurple' : 'cursor-pointer bg-LightMyLightGrayishBlue dark:bg-DarkMyDarkGrayishBlue hover:bg-gradient-to-r from-GradientBlue to-GradientPurple'}` } onClick={() => toggleCompleted(index)}>
                                     <div className={`bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue rounded-full w-5 h-5 mt-[2px] absolute ${item.completed ? 'hidden' : ''}` }/>
                                     <img src={iconChecked} className={`rounded-full w-3.5 h-3.5 my-auto  ${item.completed ? '' : 'hidden'}` } alt="icon of a checkmark"/>
@@ -184,7 +185,7 @@ function App() {
                     )}
                     <div className="flex flex-row text-LightMyDarkGrayishBlue shadow-lg text-sm bg-LightMyVeryLightGray dark:bg-DarkMyVeryDarkDesaturatedBlue justify-around text-DarkMyVeryDarkGrayishBlue py-4 rounded-b-md">
                         <span className="ml-5">{items.length} items left</span>
-                        <div className="mx-20">
+                        <div>
                             <span className={`cursor-pointer ${filterButtons['all'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayAllItems}>All</span>
                             <span className={`cursor-pointer mx-5 ${filterButtons['active'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayActiveItems}>Active</span>
                             <span className={`cursor-pointer ${filterButtons['completed'] ? 'text-MyBrightBlue' : 'hover:text-DarkMyLightGrayishBlue'}`} onClick={displayCompletedItems}>Completed</span>
